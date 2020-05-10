@@ -1,0 +1,35 @@
+version: '3'
+services:
+  db:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: toor
+      MYSQL_DATABASE: rivelian
+      MYSQL_USER: devuser
+      MYSQL_PASSWORD: devpass
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "3306:3306"
+    volumes:
+      - persistent:/var/lib/mysql
+    networks:
+      - app-network
+  web:
+    build: .
+    container_name: php_web
+    depends_on:
+      - db
+    volumes:
+      - ./files/:/var/www/html/
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "8100:80"
+    networks:
+      - app-network
+networks:
+  app-network:
+    driver: bridge
+volumes:
+  persistent:
